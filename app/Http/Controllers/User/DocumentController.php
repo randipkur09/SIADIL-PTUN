@@ -11,7 +11,8 @@ class DocumentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Document::with(['category', 'uploader']);
+        $query = Document::with(['category', 'uploader', 'room'])
+            ->where('room_id', auth()->id());
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -33,6 +34,11 @@ class DocumentController extends Controller
 
         if ($request->filled('tanggal')) {
             $query->whereDate('tanggal', $request->tanggal);
+        }
+
+        if ($request->filled('category_id')) {
+            $markReadQuery = clone $query;
+            $markReadQuery->where('is_read', false)->update(['is_read' => true]);
         }
 
         $documents  = $query->latest()->paginate(12)->withQueryString();

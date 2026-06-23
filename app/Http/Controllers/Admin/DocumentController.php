@@ -5,15 +5,22 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Document;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
+    public function rooms()
+    {
+        $rooms = User::where('role', 'user')->withCount('roomDocuments')->get();
+        return view('admin.rooms.index', compact('rooms'));
+    }
+
     public function index(Request $request)
     {
-        $query = Document::with(['category', 'uploader'])->withTrashed();
+        $query = Document::with(['category', 'uploader', 'room']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -37,24 +44,22 @@ class DocumentController extends Controller
             $query->whereDate('tanggal', $request->tanggal);
         }
 
-        if ($request->filled('status')) {
-            if ($request->status === 'deleted') {
-                $query->onlyTrashed();
-            } elseif ($request->status === 'active') {
-                $query->withoutTrashed();
-            }
+        if ($request->filled('room_id')) {
+            $query->where('room_id', $request->room_id);
         }
 
         $documents = $query->latest()->paginate(10)->withQueryString();
         $categories = Category::all();
+        $rooms = User::where('role', 'user')->get();
 
-        return view('admin.documents.index', compact('documents', 'categories'));
+        return view('admin.documents.index', compact('documents', 'categories', 'rooms'));
     }
 
     public function create()
     {
         $categories = Category::all();
-        return view('admin.documents.create', compact('categories'));
+        $rooms = User::where('role', 'user')->get();
+        return view('admin.documents.create', compact('categories', 'rooms'));
     }
 
     public function store(Request $request)
@@ -66,10 +71,12 @@ class DocumentController extends Controller
             'keterangan'     => 'nullable|string',
             'category_id'    => 'required|exists:categories,id',
             'subcategory_id' => 'nullable|exists:sub_categories,id',
+            'room_id'        => 'required|exists:users,id',
             'file'           => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:10240',
         ], [
             'judul.required'       => 'Judul dokumen wajib diisi.',
             'category_id.required' => 'Kategori wajib dipilih.',
+            'room_id.required'     => 'Tujuan Ruangan wajib dipilih.',
             'file.required'        => 'File dokumen wajib diunggah.',
             'file.mimes'           => 'Format file tidak didukung. Gunakan PDF, DOC, DOCX, XLS, XLSX, JPG, atau PNG.',
             'file.max'             => 'Ukuran file maksimal 10 MB.',
@@ -88,6 +95,7 @@ class DocumentController extends Controller
             'keterangan'     => $request->keterangan,
             'category_id'    => $request->category_id,
             'subcategory_id' => $request->subcategory_id,
+            'room_id'        => $request->room_id,
             'nama_file'      => $file->getClientOriginalName(),
             'path_file'      => $filePath,
             'ekstensi'       => $fileType,
@@ -101,14 +109,15 @@ class DocumentController extends Controller
 
     public function show(Document $document)
     {
-        $document->load(['category', 'uploader', 'downloads.user']);
+        $document->load(['category', 'uploader', 'room', 'downloads.user']);
         return view('admin.documents.show', compact('document'));
     }
 
     public function edit(Document $document)
     {
         $categories = Category::all();
-        return view('admin.documents.edit', compact('document', 'categories'));
+        $rooms = User::where('role', 'user')->get();
+        return view('admin.documents.edit', compact('document', 'categories', 'rooms'));
     }
 
     public function update(Request $request, Document $document)
@@ -120,10 +129,12 @@ class DocumentController extends Controller
             'keterangan'     => 'nullable|string',
             'category_id'    => 'required|exists:categories,id',
             'subcategory_id' => 'nullable|exists:sub_categories,id',
+            'room_id'        => 'required|exists:users,id',
             'file'           => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:10240',
         ], [
             'judul.required'       => 'Judul dokumen wajib diisi.',
             'category_id.required' => 'Kategori wajib dipilih.',
+            'room_id.required'     => 'Tujuan Ruangan wajib dipilih.',
             'file.mimes'           => 'Format file tidak didukung.',
             'file.max'             => 'Ukuran file maksimal 10 MB.',
         ]);
@@ -135,6 +146,7 @@ class DocumentController extends Controller
             'keterangan'     => $request->keterangan,
             'category_id'    => $request->category_id,
             'subcategory_id' => $request->subcategory_id,
+            'room_id'        => $request->room_id,
         ];
 
         if ($request->hasFile('file')) {

@@ -19,13 +19,14 @@ class UserSeeder extends Seeder
             'role'     => 'admin',
         ]);
 
-        // Sample Users/Pegawai
+        // Room Accounts
         $users = [
-            ['name' => 'Budi Santoso',      'username' => 'budi.santoso',   'email' => 'budi@ptun.go.id'],
-            ['name' => 'Siti Rahayu',       'username' => 'siti.rahayu',    'email' => 'siti@ptun.go.id'],
-            ['name' => 'Ahmad Fauzi',       'username' => 'ahmad.fauzi',    'email' => 'ahmad@ptun.go.id'],
-            ['name' => 'Dewi Kusuma',       'username' => 'dewi.kusuma',    'email' => 'dewi@ptun.go.id'],
-            ['name' => 'Rudi Hermawan',     'username' => 'rudi.hermawan',  'email' => 'rudi@ptun.go.id'],
+            ['name' => 'PTIP', 'username' => 'ptip', 'email' => 'ptip@ptun.go.id'],
+            ['name' => 'Kepegawaian', 'username' => 'kepegawaian', 'email' => 'kepegawaian@ptun.go.id'],
+            ['name' => 'Umum Keuangan', 'username' => 'umum-keuangan', 'email' => 'umum@ptun.go.id'],
+            ['name' => 'Paniteraan Hukum', 'username' => 'paniteraan-hukum', 'email' => 'hukum@ptun.go.id'],
+            ['name' => 'Paniteraan Perkara', 'username' => 'paniteraan-perkara', 'email' => 'perkara@ptun.go.id'],
+            ['name' => 'Hakim', 'username' => 'hakim', 'email' => 'hakim@ptun.go.id'],
         ];
 
         foreach ($users as $userData) {

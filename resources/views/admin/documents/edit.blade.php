@@ -35,6 +35,21 @@
                     @method('PUT')
 
                     <div class="mb-3">
+                        <label for="room_id" class="form-label">Tujuan Ruangan <span class="text-danger">*</span></label>
+                        <select class="form-select @error('room_id') is-invalid @enderror" id="room_id" name="room_id">
+                            <option value="">-- Pilih Tujuan Ruangan --</option>
+                            @foreach($rooms as $room)
+                                <option value="{{ $room->id }}" {{ old('room_id', $document->room_id) == $room->id ? 'selected' : '' }}>
+                                    {{ $room->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('room_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
                         <label for="judul" class="form-label">Judul Dokumen <span class="text-danger">*</span></label>
                         <input type="text" class="form-control @error('judul') is-invalid @enderror"
                                id="judul" name="judul"

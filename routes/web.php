@@ -46,6 +46,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Rooms / Folders
+    Route::get('/rooms', [AdminDocumentController::class, 'rooms'])->name('rooms.index');
+
     // Documents
     Route::get('/documents', [AdminDocumentController::class, 'index'])->name('documents.index');
     Route::get('/documents/create', [AdminDocumentController::class, 'create'])->name('documents.create');

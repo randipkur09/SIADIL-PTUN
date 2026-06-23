@@ -12,41 +12,48 @@
 {{-- Filter & Search --}}
 <div class="siadil-card mb-3">
     <div class="card-body-custom py-3">
-        <form action="{{ route('user.documents.index') }}" method="GET" class="row g-2 align-items-end">
-            <div class="col-12 col-md-3">
-                <div class="search-wrapper">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" name="search" class="form-control" placeholder="Cari judul / nomor dokumen..."
-                           value="{{ request('search') }}" id="searchInput">
+        <form action="{{ route('user.documents.index') }}" method="GET">
+            <!-- Search Row -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="search-wrapper w-100">
+                        <i class="bi bi-search search-icon" style="font-size: 0.8rem;"></i>
+                        <input type="text" name="search" class="form-control form-control-sm w-100" placeholder="Cari judul, nomor, atau keterangan dokumen..."
+                               value="{{ request('search') }}" id="searchInput" style="padding-left: 2rem;">
+                    </div>
                 </div>
             </div>
-            <div class="col-6 col-md-2">
-                <select name="category_id" class="form-select form-select-sm" id="filter_category_id">
-                    <option value="">Semua Kategori</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
-                            {{ $cat->nama }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-6 col-md-2">
-                <select name="subcategory_id" class="form-select form-select-sm" id="filter_subcategory_id">
-                    <option value="">Semua Subkategori</option>
-                </select>
-            </div>
-            <div class="col-6 col-md-3">
-                <input type="date" name="tanggal" class="form-control form-control-sm" value="{{ request('tanggal') }}" title="Filter Tanggal">
-            </div>
-            <div class="col-12 col-md-2 d-flex gap-2">
-                <button type="submit" class="btn-siadil-primary flex-grow-1">
-                    <i class="bi bi-filter"></i> Filter
-                </button>
-                @if(request()->hasAny(['search','category_id','subcategory_id','tanggal']))
-                    <a href="{{ route('user.documents.index') }}" class="btn-siadil-secondary">
-                        <i class="bi bi-x"></i>
-                    </a>
-                @endif
+
+            <!-- Filter Row -->
+            <div class="row g-2 align-items-center">
+                <div class="col-6 col-md-4 col-xl-4">
+                    <select name="category_id" class="form-select form-select-sm w-100" id="filter_category_id">
+                        <option value="">Semua Kategori</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                                {{ $cat->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-6 col-md-4 col-xl-4">
+                    <select name="subcategory_id" class="form-select form-select-sm w-100" id="filter_subcategory_id">
+                        <option value="">Semua Subkategori</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <input type="date" name="tanggal" class="form-control form-control-sm w-100" value="{{ request('tanggal') }}" title="Filter Tanggal">
+                </div>
+                <div class="col-12 col-xl-2 d-flex gap-1 justify-content-end mt-3 mt-xl-0 ms-auto">
+                    <button type="submit" class="btn-siadil-primary btn-sm px-3" style="border-radius: 6px;">
+                        <i class="bi bi-filter"></i>
+                    </button>
+                    @if(request()->hasAny(['search','category_id','subcategory_id','tanggal']))
+                        <a href="{{ route('user.documents.index') }}" class="btn-siadil-secondary btn-sm px-3" style="border-radius: 6px;">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    @endif
+                </div>
             </div>
         </form>
     </div>
@@ -68,10 +75,8 @@
                 <thead>
                     <tr>
                         <th style="width:50px">#</th>
-                        <th>Judul Dokumen</th>
-                        <th>Nomor</th>
+                        <th>Info Dokumen</th>
                         <th>Kategori</th>
-                        <th>Subkategori</th>
                         <th>Tanggal</th>
                         <th>File</th>
                         <th class="text-center" style="width:100px">Aksi</th>
@@ -82,37 +87,38 @@
                         <tr>
                             <td class="text-secondary fs-12">{{ $documents->firstItem() + $i }}</td>
                             <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi {{ $doc->file_icon }} fs-5"></i>
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi {{ $doc->file_icon }} fs-4 text-secondary mt-1"></i>
                                     <div>
-                                        <div class="fw-600">{{ Str::limit($doc->judul, 40) }}</div>
-                                        <div class="fs-12 text-secondary">{{ $doc->nama_file }}</div>
+                                        <div class="fw-700 text-dark" style="line-height: 1.3;">{{ Str::limit($doc->judul, 50) }}</div>
+                                        <div class="fs-12 text-secondary mt-1">
+                                            <span class="fw-600">No:</span> {{ $doc->nomor_dokumen ?? '-' }}
+                                        </div>
                                         @if($doc->keterangan)
-                                            <div class="fs-12 text-secondary text-truncate" style="max-width:250px">{{ $doc->keterangan }}</div>
+                                            <div class="fs-12 text-secondary text-truncate mt-1" style="max-width: 280px;" title="{{ $doc->keterangan }}">{{ $doc->keterangan }}</div>
                                         @endif
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ $doc->nomor_dokumen ?? '-' }}</td>
                             <td>
-                                <span class="badge-category">{{ $doc->category->nama ?? '-' }}</span>
-                            </td>
-                            <td>
-                                @if($doc->subCategory)
-                                    <span class="badge bg-secondary rounded-pill" style="font-size: 0.7rem;">{{ $doc->subCategory->nama }}</span>
-                                @else
-                                    -
-                                @endif
+                                <div class="d-flex flex-wrap gap-1">
+                                    <span class="badge-category text-nowrap">{{ $doc->category->nama ?? '-' }}</span>
+                                    @if($doc->subCategory)
+                                        <span class="badge bg-secondary rounded-pill text-nowrap" style="font-size: 0.7rem;">{{ $doc->subCategory->nama }}</span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="fs-12 text-secondary text-nowrap">
                                 {{ $doc->tanggal ? \Carbon\Carbon::parse($doc->tanggal)->format('d M Y') : '-' }}
                             </td>
                             <td>
                                 @php $type = strtolower($doc->ekstensi ?? ''); @endphp
-                                <span class="badge-type badge-{{ $type === 'pdf' ? 'pdf' : ($type === 'xls' || $type === 'xlsx' ? 'xls' : ($type === 'doc' || $type === 'docx' ? 'doc' : (in_array($type,['jpg','jpeg','png']) ? 'image' : 'other'))) }} mb-1 d-inline-block">
-                                    {{ strtoupper($doc->ekstensi ?? '-') }}
-                                </span>
-                                <div class="fs-12 text-secondary text-nowrap">{{ $doc->file_size_formatted }}</div>
+                                <div class="d-flex flex-column align-items-start">
+                                    <span class="badge-type badge-{{ $type === 'pdf' ? 'pdf' : ($type === 'xls' || $type === 'xlsx' ? 'xls' : ($type === 'doc' || $type === 'docx' ? 'doc' : (in_array($type,['jpg','jpeg','png']) ? 'image' : 'other'))) }} mb-1 text-nowrap">
+                                        {{ strtoupper($doc->ekstensi ?? '-') }}
+                                    </span>
+                                    <div class="fs-12 text-secondary text-nowrap">{{ $doc->file_size_formatted }}</div>
+                                </div>
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center gap-1">

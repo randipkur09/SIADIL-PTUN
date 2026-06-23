@@ -22,6 +22,7 @@ class Document extends Model
         'ekstensi',
         'keterangan',
         'user_id',
+        'room_id',
     ];
 
     protected $casts = [
@@ -48,6 +49,11 @@ class Document extends Model
     public function downloads()
     {
         return $this->hasMany(Download::class);
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(User::class, 'room_id');
     }
 
     public function getFileSizeFormattedAttribute(): string

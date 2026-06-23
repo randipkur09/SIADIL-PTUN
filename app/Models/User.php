@@ -48,4 +48,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Download::class);
     }
+
+    public function roomDocuments()
+    {
+        return $this->hasMany(Document::class, 'room_id');
+    }
 }

@@ -66,6 +66,16 @@
                         @endif
                     </div>
                     <div class="col-md-6">
+                        <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">Tujuan Ruangan</div>
+                        <div class="fw-500">
+                            @if($document->room)
+                                <span class="badge-user fs-13">{{ $document->room->name }}</span>
+                            @else
+                                -
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">Tanggal Dokumen</div>
                         <div class="fw-500">{{ $document->tanggal ? \Carbon\Carbon::parse($document->tanggal)->format('d F Y') : '-' }}</div>
                     </div>

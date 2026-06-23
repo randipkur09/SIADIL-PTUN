@@ -53,51 +53,70 @@
                     </li>
                 </ul>
 
-                <div class="sidebar-section-label">Folder</div>
+                <div class="sidebar-section-label">Folder Ruangan</div>
                 <ul class="nav flex-column">
                     @php
-                        $folders = \App\Models\Category::with('subCategories')->withCount('documents')->get();
+                        $rooms = \App\Models\User::where('role', 'user')->get();
+                        $folders = \App\Models\Category::with('subCategories')->get();
                     @endphp
-                    @foreach($folders as $folder)
-                        @if($folder->subCategories->count() > 0)
-                            <li class="nav-item">
-                                <a href="#folder-{{ $folder->id }}" class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="folder-{{ $folder->id }}">
-                                    <div>
-                                        <i class="bi {{ $folder->icon ?? 'bi-folder' }}"></i>
-                                        <span>{{ $folder->nama }}</span>
-                                    </div>
-                                    <i class="bi bi-chevron-down" style="font-size: 0.75rem;"></i>
-                                </a>
-                                <div class="collapse" id="folder-{{ $folder->id }}">
-                                    <ul class="nav flex-column ms-3">
-                                        @foreach($folder->subCategories as $sub)
+                    @foreach($rooms as $room)
+                        <li class="nav-item">
+                            <a href="#sidebar-room-{{ $room->id }}" class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebar-room-{{ $room->id }}">
+                                <div>
+                                    <i class="bi bi-building"></i>
+                                    <span>{{ $room->name }}</span>
+                                </div>
+                                <i class="bi bi-chevron-down" style="font-size: 0.75rem;"></i>
+                            </a>
+                            <div class="collapse" id="sidebar-room-{{ $room->id }}">
+                                <ul class="nav flex-column ms-3">
+                                    @foreach($folders as $folder)
+                                        @if($folder->subCategories->count() > 0)
+                                            <li class="nav-item">
+                                                <a href="#sidebar-room-{{ $room->id }}-cat-{{ $folder->id }}" class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebar-room-{{ $room->id }}-cat-{{ $folder->id }}">
+                                                    <div>
+                                                        <i class="bi {{ $folder->icon ?? 'bi-folder' }}"></i>
+                                                        <span>{{ $folder->nama }}</span>
+                                                    </div>
+                                                    <i class="bi bi-chevron-down" style="font-size: 0.75rem;"></i>
+                                                </a>
+                                                <div class="collapse" id="sidebar-room-{{ $room->id }}-cat-{{ $folder->id }}">
+                                                    <ul class="nav flex-column ms-3">
+                                                        @foreach($folder->subCategories as $sub)
+                                                            @php
+                                                                $subDocCount = \App\Models\Document::where('room_id', $room->id)->where('subcategory_id', $sub->id)->where('is_read', false)->count();
+                                                            @endphp
+                                                            <li class="nav-item">
+                                                                <a href="{{ route('admin.documents.index', ['room_id' => $room->id, 'category_id' => $folder->id, 'subcategory_id' => $sub->id]) }}" class="nav-link">
+                                                                    <i class="bi bi-folder2-open"></i>
+                                                                    <span>{{ $sub->nama }}</span>
+                                                                    @if($subDocCount > 0)
+                                                                        <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.65rem;">{{ $subDocCount }}</span>
+                                                                    @endif
+                                                                </a>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        @else
                                             @php
-                                                $subDocCount = \App\Models\Document::where('subcategory_id', $sub->id)->count();
+                                                $catDocCount = \App\Models\Document::where('room_id', $room->id)->where('category_id', $folder->id)->where('is_read', false)->count();
                                             @endphp
                                             <li class="nav-item">
-                                                <a href="{{ route('admin.documents.index', ['category_id' => $folder->id, 'subcategory_id' => $sub->id]) }}" class="nav-link">
-                                                    <i class="bi bi-folder2-open"></i>
-                                                    <span>{{ $sub->nama }}</span>
-                                                    @if($subDocCount > 0)
-                                                        <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.65rem;">{{ $subDocCount }}</span>
+                                                <a href="{{ route('admin.documents.index', ['room_id' => $room->id, 'category_id' => $folder->id]) }}" class="nav-link">
+                                                    <i class="bi {{ $folder->icon ?? 'bi-folder' }}"></i>
+                                                    <span>{{ $folder->nama }}</span>
+                                                    @if($catDocCount > 0)
+                                                        <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.65rem;">{{ $catDocCount }}</span>
                                                     @endif
                                                 </a>
                                             </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </li>
-                        @else
-                            <li class="nav-item">
-                                <a href="{{ route('admin.documents.index', ['category_id' => $folder->id]) }}" class="nav-link">
-                                    <i class="bi {{ $folder->icon ?? 'bi-folder' }}"></i>
-                                    <span>{{ $folder->nama }}</span>
-                                    @if($folder->documents_count > 0)
-                                        <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.65rem;">{{ $folder->documents_count }}</span>
-                                    @endif
-                                </a>
-                            </li>
-                        @endif
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </li>
                     @endforeach
                 </ul>
 
@@ -146,7 +165,7 @@
                                     <ul class="nav flex-column ms-3">
                                         @foreach($folder->subCategories as $sub)
                                             @php
-                                                $subDocCount = \App\Models\Document::where('subcategory_id', $sub->id)->count();
+                                                $subDocCount = \App\Models\Document::where('room_id', auth()->id())->where('subcategory_id', $sub->id)->where('is_read', false)->count();
                                             @endphp
                                             <li class="nav-item">
                                                 <a href="{{ route('user.documents.index', ['category_id' => $folder->id, 'subcategory_id' => $sub->id]) }}" class="nav-link">
@@ -162,12 +181,15 @@
                                 </div>
                             </li>
                         @else
+                            @php
+                                $catDocCount = \App\Models\Document::where('room_id', auth()->id())->where('category_id', $folder->id)->where('is_read', false)->count();
+                            @endphp
                             <li class="nav-item">
                                 <a href="{{ route('user.documents.index', ['category_id' => $folder->id]) }}" class="nav-link">
                                     <i class="bi {{ $folder->icon ?? 'bi-folder' }}"></i>
                                     <span>{{ $folder->nama }}</span>
-                                    @if($folder->documents_count > 0)
-                                        <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.65rem;">{{ $folder->documents_count }}</span>
+                                    @if($catDocCount > 0)
+                                        <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.65rem;">{{ $catDocCount }}</span>
                                     @endif
                                 </a>
                             </li>
