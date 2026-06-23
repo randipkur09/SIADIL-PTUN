@@ -22,14 +22,14 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_ruangan' => 'required|string|max:255|unique:categories,nama_ruangan',
-            'deskripsi'    => 'nullable|string',
+            'nama' => 'required|string|max:255|unique:categories,nama',
+            'icon'    => 'nullable|string',
         ], [
-            'nama_ruangan.required' => 'Nama ruangan wajib diisi.',
-            'nama_ruangan.unique'   => 'Nama ruangan sudah ada.',
+            'nama.required' => 'Nama kategori wajib diisi.',
+            'nama.unique'   => 'Nama kategori sudah ada.',
         ]);
 
-        Category::create($request->only('nama_ruangan', 'deskripsi'));
+        Category::create($request->only('nama', 'icon'));
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Kategori ruangan berhasil ditambahkan.');
@@ -43,14 +43,14 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $request->validate([
-            'nama_ruangan' => 'required|string|max:255|unique:categories,nama_ruangan,' . $category->id,
-            'deskripsi'    => 'nullable|string',
+            'nama' => 'required|string|max:255|unique:categories,nama,' . $category->id,
+            'icon'    => 'nullable|string',
         ], [
-            'nama_ruangan.required' => 'Nama ruangan wajib diisi.',
-            'nama_ruangan.unique'   => 'Nama ruangan sudah ada.',
+            'nama.required' => 'Nama kategori wajib diisi.',
+            'nama.unique'   => 'Nama kategori sudah ada.',
         ]);
 
-        $category->update($request->only('nama_ruangan', 'deskripsi'));
+        $category->update($request->only('nama', 'icon'));
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Kategori ruangan berhasil diperbarui.');

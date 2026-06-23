@@ -5,6 +5,7 @@ use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DocumentController as AdminDocumentController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\User\DocumentController as UserDocumentController;
 use Illuminate\Support\Facades\Route;
@@ -63,6 +64,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+    // SubCategories (Ajax)
+    Route::get('/sub-categories/by-category/{category_id}', [SubCategoryController::class, 'getByCategory'])->name('sub-categories.by-category');
 
     // Users
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

@@ -1,32 +1,32 @@
 @extends('layouts.app')
 
-@section('title', 'Data Ruangan')
-@section('page-title', 'Data Ruangan')
+@section('title', 'Kategori & Folder')
+@section('page-title', 'Kategori & Folder')
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-    <li class="breadcrumb-item active">Data Ruangan</li>
+    <li class="breadcrumb-item active">Kategori & Folder</li>
 @endsection
 
 @section('content')
 <div class="page-header">
     <div>
-        <h2 class="page-heading">Data Ruangan</h2>
-        <p class="page-subheading">Kelola kategori ruangan arsip</p>
+        <h2 class="page-heading">Kategori & Folder</h2>
+        <p class="page-subheading">Kelola kategori dan folder arsip</p>
     </div>
     <a href="{{ route('admin.categories.create') }}" class="btn-siadil-primary">
         <i class="bi bi-plus-circle"></i>
-        Tambah Ruangan
+        Tambah Kategori
     </a>
 </div>
 
 <div class="siadil-card">
     <div class="card-header-custom">
         <div class="card-title-custom">
-            <i class="bi bi-building text-primary"></i>
-            Daftar Ruangan
+            <i class="bi bi-tags text-primary"></i>
+            Daftar Kategori & Folder
         </div>
-        <span class="badge bg-primary rounded-pill">{{ $categories->total() }} ruangan</span>
+        <span class="badge bg-primary rounded-pill">{{ $categories->total() }} kategori</span>
     </div>
 
     @if($categories->count() > 0)
@@ -35,8 +35,8 @@
                 <thead>
                     <tr>
                         <th style="width:50px">#</th>
-                        <th>Nama Ruangan</th>
-                        <th>Deskripsi</th>
+                        <th>Nama Kategori</th>
+                        <th>Icon</th>
                         <th>Jumlah Dokumen</th>
                         <th>Dibuat</th>
                         <th class="text-center" style="width:100px">Aksi</th>
@@ -49,12 +49,12 @@
                             <td>
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="btn-icon btn-icon-view" style="pointer-events:none">
-                                        <i class="bi bi-building"></i>
+                                        <i class="bi {{ $cat->icon ?? 'bi-folder' }}"></i>
                                     </div>
-                                    <span class="fw-600">{{ $cat->nama_ruangan }}</span>
+                                    <span class="fw-600">{{ $cat->nama }}</span>
                                 </div>
                             </td>
-                            <td class="text-secondary fs-13">{{ $cat->deskripsi ?? '-' }}</td>
+                            <td class="text-secondary fs-13"><i class="bi {{ $cat->icon }}"></i> {{ $cat->icon ?? '-' }}</td>
                             <td>
                                 <span class="badge-category">{{ $cat->documents_count }} dokumen</span>
                             </td>
@@ -65,7 +65,7 @@
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <button type="button" class="btn-icon btn-icon-delete" title="Hapus"
-                                        onclick="confirmDelete('{{ route('admin.categories.destroy', $cat) }}', '{{ $cat->nama_ruangan }}', {{ $cat->documents_count }})">
+                                        onclick="confirmDelete('{{ route('admin.categories.destroy', $cat) }}', '{{ $cat->nama }}', {{ $cat->documents_count }})">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -79,18 +79,18 @@
         @if($categories->hasPages())
             <div class="d-flex justify-content-between align-items-center px-3 py-3 border-top">
                 <div class="fs-12 text-secondary">
-                    Menampilkan {{ $categories->firstItem() }}-{{ $categories->lastItem() }} dari {{ $categories->total() }} ruangan
+                    Menampilkan {{ $categories->firstItem() }}-{{ $categories->lastItem() }} dari {{ $categories->total() }} kategori
                 </div>
                 {{ $categories->links('vendor.pagination.bootstrap-5') }}
             </div>
         @endif
     @else
         <div class="empty-state">
-            <i class="bi bi-building-x"></i>
-            <h6>Belum Ada Ruangan</h6>
-            <p>Tambahkan kategori ruangan untuk mengorganisir dokumen.</p>
+            <i class="bi bi-folder-x"></i>
+            <h6>Belum Ada Kategori</h6>
+            <p>Tambahkan kategori folder untuk mengorganisir dokumen.</p>
             <a href="{{ route('admin.categories.create') }}" class="btn-siadil-primary">
-                <i class="bi bi-plus-circle"></i> Tambah Ruangan
+                <i class="bi bi-plus-circle"></i> Tambah Kategori
             </a>
         </div>
     @endif
@@ -102,18 +102,18 @@
             <div class="modal-header border-0 pb-0">
                 <div class="modal-title d-flex align-items-center gap-2">
                     <div class="btn-icon btn-icon-delete" style="pointer-events:none"><i class="bi bi-trash"></i></div>
-                    <span class="fw-700">Konfirmasi Hapus Ruangan</span>
+                    <span class="fw-700">Konfirmasi Hapus Kategori</span>
                 </div>
             </div>
             <div class="modal-body">
-                <p>Anda akan menghapus ruangan: <strong id="deleteCatName"></strong></p>
+                <p>Anda akan menghapus kategori: <strong id="deleteCatName"></strong></p>
                 <div class="alert alert-siadil alert-siadil-danger d-none" id="hasDocAlert">
                     <i class="bi bi-exclamation-triangle-fill"></i>
-                    Ruangan ini memiliki dokumen dan tidak dapat dihapus. Pindahkan atau hapus dokumen terlebih dahulu.
+                    Kategori ini memiliki dokumen dan tidak dapat dihapus. Pindahkan atau hapus dokumen terlebih dahulu.
                 </div>
                 <div class="alert alert-siadil alert-siadil-warning d-none" id="noDocAlert">
                     <i class="bi bi-info-circle"></i>
-                    Ruangan ini tidak memiliki dokumen dan aman untuk dihapus.
+                    Kategori ini tidak memiliki dokumen dan aman untuk dihapus.
                 </div>
             </div>
             <div class="modal-footer border-0">

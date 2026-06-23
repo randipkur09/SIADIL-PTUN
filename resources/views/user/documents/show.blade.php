@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $document->nama_file)
+@section('title', $document->judul)
 @section('page-title', 'Detail Dokumen')
 
 @section('breadcrumb')
@@ -30,10 +30,11 @@
             {{-- File Header --}}
             <div style="background:linear-gradient(135deg,#e8f0fe,#dbeafe);padding:2rem;text-align:center;border-bottom:1px solid var(--siadil-gray-200)">
                 <i class="bi {{ $document->file_icon }}" style="font-size:4.5rem;"></i>
-                <h5 class="fw-700 mt-3 mb-1">{{ $document->nama_file }}</h5>
+                <h5 class="fw-700 mt-3 mb-1">{{ $document->judul }}</h5>
+                <div class="fs-13 text-secondary mb-3"><i class="bi bi-file-earmark-text"></i> {{ $document->nama_file }}</div>
                 <div class="d-flex justify-content-center gap-2 flex-wrap">
-                    <span class="badge-type badge-{{ strtolower($document->file_type) === 'pdf' ? 'pdf' : (in_array(strtolower($document->file_type),['xls','xlsx']) ? 'xls' : (in_array(strtolower($document->file_type),['doc','docx']) ? 'doc' : (in_array(strtolower($document->file_type),['jpg','jpeg','png']) ? 'image' : 'other'))) }}">
-                        {{ strtoupper($document->file_type) }}
+                    <span class="badge-type badge-{{ strtolower($document->ekstensi) === 'pdf' ? 'pdf' : (in_array(strtolower($document->ekstensi),['xls','xlsx']) ? 'xls' : (in_array(strtolower($document->ekstensi),['doc','docx']) ? 'doc' : (in_array(strtolower($document->ekstensi),['jpg','jpeg','png']) ? 'image' : 'other'))) }}">
+                        {{ strtoupper($document->ekstensi) }}
                     </span>
                     <span class="fs-12 text-secondary">{{ $document->file_size_formatted }}</span>
                 </div>
@@ -42,11 +43,32 @@
             <div class="card-body-custom">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="p-3 bg-light rounded">
+                        <div class="p-3 bg-light rounded h-100">
                             <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">
-                                <i class="bi bi-building me-1"></i>Ruangan
+                                <i class="bi bi-hash me-1"></i>Nomor Dokumen
                             </div>
-                            <div class="fw-600">{{ $document->category->nama_ruangan ?? '-' }}</div>
+                            <div class="fw-600">{{ $document->nomor_dokumen ?? '-' }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">
+                                <i class="bi bi-folder me-1"></i>Kategori / Subkategori
+                            </div>
+                            <div class="fw-600">
+                                {{ $document->category->nama ?? '-' }}
+                                @if($document->subCategory)
+                                    <span class="text-secondary ms-1">/ {{ $document->subCategory->nama }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">
+                                <i class="bi bi-calendar-date me-1"></i>Tanggal Dokumen
+                            </div>
+                            <div class="fw-600">{{ $document->tanggal ? \Carbon\Carbon::parse($document->tanggal)->format('d F Y') : '-' }}</div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -73,13 +95,13 @@
                             <div>{{ $document->created_at->format('d F Y') }}</div>
                         </div>
                     </div>
-                    @if($document->deskripsi)
+                    @if($document->keterangan)
                         <div class="col-12">
                             <div class="p-3 bg-light rounded">
                                 <div class="fs-12 text-secondary fw-600 text-uppercase mb-2">
-                                    <i class="bi bi-card-text me-1"></i>Deskripsi
+                                    <i class="bi bi-card-text me-1"></i>Keterangan
                                 </div>
-                                <p class="mb-0 text-secondary">{{ $document->deskripsi }}</p>
+                                <p class="mb-0 text-secondary">{{ $document->keterangan }}</p>
                             </div>
                         </div>
                     @endif

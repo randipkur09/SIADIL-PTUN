@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Ruangan')
-@section('page-title', 'Tambah Ruangan')
+@section('title', 'Tambah Kategori')
+@section('page-title', 'Tambah Kategori')
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-    <li class="breadcrumb-item"><a href="{{ route('admin.categories.index') }}">Data Ruangan</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.categories.index') }}">Kategori & Folder</a></li>
     <li class="breadcrumb-item active">Tambah</li>
 @endsection
 
 @section('content')
 <div class="page-header">
     <div>
-        <h2 class="page-heading">Tambah Ruangan</h2>
-        <p class="page-subheading">Buat kategori ruangan baru</p>
+        <h2 class="page-heading">Tambah Kategori</h2>
+        <p class="page-subheading">Buat kategori folder baru</p>
     </div>
     <a href="{{ route('admin.categories.index') }}" class="btn-siadil-secondary">
         <i class="bi bi-arrow-left"></i> Kembali
@@ -26,27 +26,27 @@
             <div class="card-header-custom">
                 <div class="card-title-custom">
                     <i class="bi bi-plus-circle text-primary"></i>
-                    Form Tambah Ruangan
+                    Form Tambah Kategori
                 </div>
             </div>
             <div class="card-body-custom">
                 <form action="{{ route('admin.categories.store') }}" method="POST" class="form-siadil">
                     @csrf
                     <div class="mb-3">
-                        <label for="nama_ruangan" class="form-label">Nama Ruangan <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('nama_ruangan') is-invalid @enderror"
-                               id="nama_ruangan" name="nama_ruangan" value="{{ old('nama_ruangan') }}"
-                               placeholder="Contoh: Kepaniteraan">
-                        @error('nama_ruangan')
+                        <label for="nama" class="form-label">Nama Kategori <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('nama') is-invalid @enderror"
+                               id="nama" name="nama" value="{{ old('nama') }}"
+                               placeholder="Contoh: Laporan Bulanan">
+                        @error('nama')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mb-4">
-                        <label for="deskripsi" class="form-label">Deskripsi</label>
-                        <textarea class="form-control @error('deskripsi') is-invalid @enderror"
-                                  id="deskripsi" name="deskripsi" rows="3"
-                                  placeholder="Keterangan ruangan...">{{ old('deskripsi') }}</textarea>
-                        @error('deskripsi')
+                        <label for="icon" class="form-label">Icon Bootstrap (Opsional)</label>
+                        <input type="text" class="form-control @error('icon') is-invalid @enderror"
+                                  id="icon" name="icon" value="{{ old('icon') }}" placeholder="Contoh: bi-folder">
+                        <small class="text-muted">Gunakan class icon dari Bootstrap Icons, misal: <code>bi-folder</code></small>
+                        @error('icon')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

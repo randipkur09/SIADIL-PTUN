@@ -34,36 +34,67 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label for="nama_file" class="form-label">Nama Dokumen <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('nama_file') is-invalid @enderror"
-                               id="nama_file" name="nama_file" value="{{ old('nama_file') }}"
-                               placeholder="Contoh: Surat Keputusan No. 001/2024">
-                        @error('nama_file')
+                        <label for="judul" class="form-label">Judul Dokumen <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('judul') is-invalid @enderror"
+                               id="judul" name="judul" value="{{ old('judul') }}"
+                               placeholder="Contoh: Laporan Bulanan Kepaniteraan">
+                        @error('judul')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label for="category_id" class="form-label">Kategori Ruangan <span class="text-danger">*</span></label>
-                        <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id">
-                            <option value="">-- Pilih Ruangan --</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>
-                                    {{ $cat->nama_ruangan }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('category_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nomor_dokumen" class="form-label">Nomor Dokumen</label>
+                            <input type="text" class="form-control @error('nomor_dokumen') is-invalid @enderror"
+                                   id="nomor_dokumen" name="nomor_dokumen" value="{{ old('nomor_dokumen') }}"
+                                   placeholder="Contoh: 001/PTUN/2024">
+                            @error('nomor_dokumen')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="tanggal" class="form-label">Tanggal Dokumen</label>
+                            <input type="date" class="form-control @error('tanggal') is-invalid @enderror"
+                                   id="tanggal" name="tanggal" value="{{ old('tanggal') }}">
+                            @error('tanggal')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="category_id" class="form-label">Kategori / Folder <span class="text-danger">*</span></label>
+                            <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id">
+                                <option value="">-- Pilih Kategori --</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>
+                                        {{ $cat->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('category_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3" id="subcategory_container" style="display: none;">
+                            <label for="subcategory_id" class="form-label">Subkategori</label>
+                            <select class="form-select @error('subcategory_id') is-invalid @enderror" id="subcategory_id" name="subcategory_id">
+                                <option value="">-- Pilih Subkategori --</option>
+                            </select>
+                            @error('subcategory_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="deskripsi" class="form-label">Deskripsi</label>
-                        <textarea class="form-control @error('deskripsi') is-invalid @enderror"
-                                  id="deskripsi" name="deskripsi" rows="3"
-                                  placeholder="Keterangan singkat tentang dokumen ini...">{{ old('deskripsi') }}</textarea>
-                        @error('deskripsi')
+                        <label for="keterangan" class="form-label">Keterangan</label>
+                        <textarea class="form-control @error('keterangan') is-invalid @enderror"
+                                  id="keterangan" name="keterangan" rows="3"
+                                  placeholder="Keterangan singkat tentang dokumen ini...">{{ old('keterangan') }}</textarea>
+                        @error('keterangan')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -168,5 +199,45 @@ document.getElementById('uploadForm').addEventListener('submit', function() {
     submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengunggah...';
     submitBtn.disabled = true;
 });
+
+// Load subcategories
+const categorySelect = document.getElementById('category_id');
+const subcategoryContainer = document.getElementById('subcategory_container');
+const subcategorySelect = document.getElementById('subcategory_id');
+const oldSubcategory = "{{ old('subcategory_id') }}";
+
+function fetchSubcategories(categoryId, selectedSub = null) {
+    if (!categoryId) {
+        subcategoryContainer.style.display = 'none';
+        subcategorySelect.innerHTML = '<option value="">-- Pilih Subkategori --</option>';
+        return;
+    }
+    
+    fetch(`/admin/sub-categories/by-category/${categoryId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                subcategoryContainer.style.display = 'block';
+                let options = '<option value="">-- Pilih Subkategori --</option>';
+                data.forEach(sub => {
+                    const isSelected = selectedSub == sub.id ? 'selected' : '';
+                    options += `<option value="${sub.id}" ${isSelected}>${sub.nama}</option>`;
+                });
+                subcategorySelect.innerHTML = options;
+            } else {
+                subcategoryContainer.style.display = 'none';
+                subcategorySelect.innerHTML = '<option value="">-- Pilih Subkategori --</option>';
+            }
+        });
+}
+
+categorySelect.addEventListener('change', function() {
+    fetchSubcategories(this.value);
+});
+
+// Load on init if category is selected (e.g. on validation error)
+if (categorySelect.value) {
+    fetchSubcategories(categorySelect.value, oldSubcategory);
+}
 </script>
 @endpush

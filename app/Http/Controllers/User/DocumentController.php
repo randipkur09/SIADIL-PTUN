@@ -16,13 +16,23 @@ class DocumentController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('nama_file', 'like', "%{$search}%")
-                  ->orWhere('deskripsi', 'like', "%{$search}%");
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('nomor_dokumen', 'like', "%{$search}%")
+                  ->orWhere('nama_file', 'like', "%{$search}%")
+                  ->orWhere('keterangan', 'like', "%{$search}%");
             });
         }
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('subcategory_id')) {
+            $query->where('subcategory_id', $request->subcategory_id);
+        }
+
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal', $request->tanggal);
         }
 
         $documents  = $query->latest()->paginate(12)->withQueryString();

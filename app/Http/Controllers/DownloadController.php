@@ -20,12 +20,12 @@ class DownloadController extends Controller
             'downloaded_at' => now(),
         ]);
 
-        $filePath = storage_path('app/public/' . $document->file_path);
+        $filePath = storage_path('app/public/' . $document->path_file);
 
         if (!file_exists($filePath)) {
             return redirect()->back()->with('error', 'File tidak ditemukan di server.');
         }
 
-        return response()->download($filePath, $document->nama_file . '.' . $document->file_type);
+        return response()->download($filePath, $document->nama_file);
     }
 }

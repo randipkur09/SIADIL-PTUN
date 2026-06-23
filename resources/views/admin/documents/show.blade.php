@@ -42,10 +42,11 @@
                 <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded">
                     <i class="bi {{ $document->file_icon }}" style="font-size:3.5rem;"></i>
                     <div>
-                        <h5 class="fw-700 mb-1">{{ $document->nama_file }}</h5>
+                        <h5 class="fw-700 mb-1">{{ $document->judul }}</h5>
+                        <div class="fs-13 text-secondary mb-2"><i class="bi bi-file-earmark-text"></i> {{ $document->nama_file }}</div>
                         <div class="d-flex gap-2 flex-wrap">
-                            <span class="badge-type badge-{{ strtolower($document->file_type) === 'pdf' ? 'pdf' : (in_array(strtolower($document->file_type),['xls','xlsx']) ? 'xls' : (in_array(strtolower($document->file_type),['doc','docx']) ? 'doc' : (in_array(strtolower($document->file_type),['jpg','jpeg','png']) ? 'image' : 'other'))) }}">
-                                {{ strtoupper($document->file_type) }}
+                            <span class="badge-type badge-{{ strtolower($document->ekstensi) === 'pdf' ? 'pdf' : (in_array(strtolower($document->ekstensi),['xls','xlsx']) ? 'xls' : (in_array(strtolower($document->ekstensi),['doc','docx']) ? 'doc' : (in_array(strtolower($document->ekstensi),['jpg','jpeg','png']) ? 'image' : 'other'))) }}">
+                                {{ strtoupper($document->ekstensi) }}
                             </span>
                             <span class="fs-12 text-secondary">{{ $document->file_size_formatted }}</span>
                         </div>
@@ -54,8 +55,19 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">Ruangan/Kategori</div>
-                        <span class="badge-category fs-13">{{ $document->category->nama_ruangan ?? '-' }}</span>
+                        <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">Nomor Dokumen</div>
+                        <div class="fw-500">{{ $document->nomor_dokumen ?? '-' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">Kategori / Subkategori</div>
+                        <span class="badge-category fs-13">{{ $document->category->nama ?? '-' }}</span>
+                        @if($document->subCategory)
+                            <span class="badge bg-secondary rounded-pill ms-1">{{ $document->subCategory->nama }}</span>
+                        @endif
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">Tanggal Dokumen</div>
+                        <div class="fw-500">{{ $document->tanggal ? \Carbon\Carbon::parse($document->tanggal)->format('d F Y') : '-' }}</div>
                     </div>
                     <div class="col-md-6">
                         <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">Diunggah Oleh</div>
@@ -73,10 +85,10 @@
                         <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">Total Download</div>
                         <div class="fw-700 fs-5">{{ $document->downloads->count() }} <span class="fs-13 fw-400 text-secondary">kali</span></div>
                     </div>
-                    @if($document->deskripsi)
+                    @if($document->keterangan)
                         <div class="col-12">
-                            <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">Deskripsi</div>
-                            <p class="mb-0 text-secondary">{{ $document->deskripsi }}</p>
+                            <div class="fs-12 text-secondary fw-600 text-uppercase mb-1">Keterangan</div>
+                            <p class="mb-0 text-secondary">{{ $document->keterangan }}</p>
                         </div>
                     @endif
                 </div>

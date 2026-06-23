@@ -22,7 +22,7 @@
         {{-- Brand --}}
         <div class="sidebar-brand">
             <div class="sidebar-brand-icon">
-                <i class="bi bi-archive-fill"></i>
+                <img src="{{ asset('images/logo.png') }}" alt="Logo PTUN" style="height: 36px; object-fit: contain;">
             </div>
             <div class="sidebar-brand-text">
                 <div class="brand-title">SIADIL</div>
@@ -43,18 +43,70 @@
                     </li>
                 </ul>
 
-                <div class="sidebar-section-label">Manajemen</div>
+                <div class="sidebar-section-label">Manajemen Dokumen</div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a href="{{ route('admin.documents.index') }}" class="nav-link {{ request()->routeIs('admin.documents*') ? 'active' : '' }}">
                             <i class="bi bi-file-earmark-text"></i>
-                            <span>Data Dokumen</span>
+                            <span>Semua Dokumen</span>
                         </a>
                     </li>
+                </ul>
+
+                <div class="sidebar-section-label">Folder</div>
+                <ul class="nav flex-column">
+                    @php
+                        $folders = \App\Models\Category::with('subCategories')->withCount('documents')->get();
+                    @endphp
+                    @foreach($folders as $folder)
+                        @if($folder->subCategories->count() > 0)
+                            <li class="nav-item">
+                                <a href="#folder-{{ $folder->id }}" class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="folder-{{ $folder->id }}">
+                                    <div>
+                                        <i class="bi {{ $folder->icon ?? 'bi-folder' }}"></i>
+                                        <span>{{ $folder->nama }}</span>
+                                    </div>
+                                    <i class="bi bi-chevron-down" style="font-size: 0.75rem;"></i>
+                                </a>
+                                <div class="collapse" id="folder-{{ $folder->id }}">
+                                    <ul class="nav flex-column ms-3">
+                                        @foreach($folder->subCategories as $sub)
+                                            @php
+                                                $subDocCount = \App\Models\Document::where('subcategory_id', $sub->id)->count();
+                                            @endphp
+                                            <li class="nav-item">
+                                                <a href="{{ route('admin.documents.index', ['category_id' => $folder->id, 'subcategory_id' => $sub->id]) }}" class="nav-link">
+                                                    <i class="bi bi-folder2-open"></i>
+                                                    <span>{{ $sub->nama }}</span>
+                                                    @if($subDocCount > 0)
+                                                        <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.65rem;">{{ $subDocCount }}</span>
+                                                    @endif
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </li>
+                        @else
+                            <li class="nav-item">
+                                <a href="{{ route('admin.documents.index', ['category_id' => $folder->id]) }}" class="nav-link">
+                                    <i class="bi {{ $folder->icon ?? 'bi-folder' }}"></i>
+                                    <span>{{ $folder->nama }}</span>
+                                    @if($folder->documents_count > 0)
+                                        <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.65rem;">{{ $folder->documents_count }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+
+                <div class="sidebar-section-label">Pengaturan</div>
+                <ul class="nav flex-column">
                     <li class="nav-item">
                         <a href="{{ route('admin.categories.index') }}" class="nav-link {{ request()->routeIs('admin.categories*') ? 'active' : '' }}">
-                            <i class="bi bi-building"></i>
-                            <span>Data Ruangan</span>
+                            <i class="bi bi-tags"></i>
+                            <span>Kategori & Folder</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -65,14 +117,62 @@
                     </li>
                 </ul>
             @else
-                <div class="sidebar-section-label">Menu</div>
+                <div class="sidebar-section-label">Menu Utama</div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a href="{{ route('user.documents.index') }}" class="nav-link {{ request()->routeIs('user.documents*') ? 'active' : '' }}">
                             <i class="bi bi-file-earmark-text"></i>
-                            <span>Daftar Dokumen</span>
+                            <span>Semua Dokumen</span>
                         </a>
                     </li>
+                </ul>
+
+                <div class="sidebar-section-label">Folder</div>
+                <ul class="nav flex-column">
+                    @php
+                        $folders = \App\Models\Category::with('subCategories')->withCount('documents')->get();
+                    @endphp
+                    @foreach($folders as $folder)
+                        @if($folder->subCategories->count() > 0)
+                            <li class="nav-item">
+                                <a href="#folder-user-{{ $folder->id }}" class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="folder-user-{{ $folder->id }}">
+                                    <div>
+                                        <i class="bi {{ $folder->icon ?? 'bi-folder' }}"></i>
+                                        <span>{{ $folder->nama }}</span>
+                                    </div>
+                                    <i class="bi bi-chevron-down" style="font-size: 0.75rem;"></i>
+                                </a>
+                                <div class="collapse" id="folder-user-{{ $folder->id }}">
+                                    <ul class="nav flex-column ms-3">
+                                        @foreach($folder->subCategories as $sub)
+                                            @php
+                                                $subDocCount = \App\Models\Document::where('subcategory_id', $sub->id)->count();
+                                            @endphp
+                                            <li class="nav-item">
+                                                <a href="{{ route('user.documents.index', ['category_id' => $folder->id, 'subcategory_id' => $sub->id]) }}" class="nav-link">
+                                                    <i class="bi bi-folder2-open"></i>
+                                                    <span>{{ $sub->nama }}</span>
+                                                    @if($subDocCount > 0)
+                                                        <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.65rem;">{{ $subDocCount }}</span>
+                                                    @endif
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </li>
+                        @else
+                            <li class="nav-item">
+                                <a href="{{ route('user.documents.index', ['category_id' => $folder->id]) }}" class="nav-link">
+                                    <i class="bi {{ $folder->icon ?? 'bi-folder' }}"></i>
+                                    <span>{{ $folder->nama }}</span>
+                                    @if($folder->documents_count > 0)
+                                        <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.65rem;">{{ $folder->documents_count }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                        @endif
+                    @endforeach
                 </ul>
             @endif
         </nav>

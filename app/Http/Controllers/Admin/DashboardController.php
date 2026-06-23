@@ -13,11 +13,17 @@ class DashboardController extends Controller
     public function index()
     {
         $totalDocuments = Document::count();
-        $totalCategories = Category::count();
+        $totalCategories = Category::count() + \App\Models\SubCategory::count(); // Total Folder
         $totalUsers = User::where('role', 'user')->count();
         $totalDownloads = Download::count();
 
-        $recentDocuments = Document::with(['category', 'uploader'])
+        $dokumenBulanIni = Document::whereMonth('created_at', now()->month)
+                                   ->whereYear('created_at', now()->year)
+                                   ->count();
+        
+        $uploadTerbaru = Document::latest()->first();
+
+        $recentDocuments = Document::with(['category', 'subCategory', 'uploader'])
             ->latest()
             ->take(5)
             ->get();
@@ -38,7 +44,9 @@ class DashboardController extends Controller
             'totalDownloads',
             'recentDocuments',
             'downloadsByCategory',
-            'recentDownloads'
+            'recentDownloads',
+            'dokumenBulanIni',
+            'uploadTerbaru'
         ));
     }
 }

@@ -11,13 +11,17 @@ class Document extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'nama_file',
-        'deskripsi',
+        'judul',
+        'nomor_dokumen',
+        'tanggal',
         'category_id',
-        'file_path',
-        'file_type',
-        'file_size',
-        'uploaded_by',
+        'subcategory_id',
+        'nama_file',
+        'path_file',
+        'ukuran_file',
+        'ekstensi',
+        'keterangan',
+        'user_id',
     ];
 
     protected $casts = [
@@ -31,9 +35,14 @@ class Document extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function subCategory()
+    {
+        return $this->belongsTo(SubCategory::class, 'subcategory_id');
+    }
+
     public function uploader()
     {
-        return $this->belongsTo(User::class, 'uploaded_by');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function downloads()
@@ -43,7 +52,7 @@ class Document extends Model
 
     public function getFileSizeFormattedAttribute(): string
     {
-        $bytes = $this->file_size;
+        $bytes = $this->ukuran_file;
         if ($bytes >= 1048576) {
             return round($bytes / 1048576, 2) . ' MB';
         } elseif ($bytes >= 1024) {
@@ -54,7 +63,7 @@ class Document extends Model
 
     public function getFileIconAttribute(): string
     {
-        return match (strtolower($this->file_type)) {
+        return match (strtolower($this->ekstensi)) {
             'pdf'           => 'bi-file-earmark-pdf text-danger',
             'doc', 'docx'   => 'bi-file-earmark-word text-primary',
             'xls', 'xlsx'   => 'bi-file-earmark-excel text-success',

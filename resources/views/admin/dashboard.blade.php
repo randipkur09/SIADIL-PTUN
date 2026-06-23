@@ -20,9 +20,9 @@
     </div>
     <div class="col-6 col-xl-3">
         <div class="stat-card green">
-            <div class="stat-icon"><i class="bi bi-building-fill"></i></div>
+            <div class="stat-icon"><i class="bi bi-folder-fill"></i></div>
             <div class="stat-value">{{ number_format($totalCategories) }}</div>
-            <div class="stat-label">Kategori Ruangan</div>
+            <div class="stat-label">Kategori / Folder</div>
         </div>
     </div>
     <div class="col-6 col-xl-3">
@@ -59,8 +59,8 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Nama Dokumen</th>
-                            <th>Ruangan</th>
+                            <th>Judul Dokumen</th>
+                            <th>Kategori</th>
                             <th>Tipe</th>
                             <th>Tanggal</th>
                         </tr>
@@ -71,17 +71,17 @@
                                 <td class="text-secondary fs-12">{{ $i + 1 }}</td>
                                 <td>
                                     <a href="{{ route('admin.documents.show', $doc) }}" class="fw-600 text-decoration-none">
-                                        {{ Str::limit($doc->nama_file, 40) }}
+                                        {{ Str::limit($doc->judul, 40) }}
                                     </a>
                                     <div class="fs-12 text-secondary">Oleh: {{ $doc->uploader->name ?? '-' }}</div>
                                 </td>
                                 <td>
-                                    <span class="badge-category">{{ $doc->category->nama_ruangan ?? '-' }}</span>
+                                    <span class="badge-category">{{ $doc->category->nama ?? '-' }}</span>
                                 </td>
                                 <td>
-                                    @php $type = strtolower($doc->file_type ?? 'other'); @endphp
+                                    @php $type = strtolower($doc->ekstensi ?? 'other'); @endphp
                                     <span class="badge-type badge-{{ in_array($type, ['pdf','doc','docx','xls','xlsx']) ? ($type === 'pdf' ? 'pdf' : ($type === 'xls' || $type === 'xlsx' ? 'xls' : 'doc')) : (in_array($type, ['jpg','jpeg','png']) ? 'image' : 'other') }}">
-                                        {{ strtoupper($doc->file_type ?? '-') }}
+                                        {{ strtoupper($doc->ekstensi ?? '-') }}
                                     </span>
                                 </td>
                                 <td class="fs-12 text-secondary text-nowrap">
@@ -120,8 +120,8 @@
                     Upload Dokumen
                 </a>
                 <a href="{{ route('admin.categories.create') }}" class="btn-siadil-secondary justify-content-center">
-                    <i class="bi bi-plus-circle"></i>
-                    Tambah Ruangan
+                    <i class="bi bi-folder-plus"></i>
+                    Tambah Kategori/Folder
                 </a>
                 <a href="{{ route('admin.users.create') }}" class="btn-siadil-secondary justify-content-center">
                     <i class="bi bi-person-plus"></i>
@@ -145,7 +145,7 @@
                             {{ strtoupper(substr($dl->user->name ?? 'U', 0, 1)) }}
                         </div>
                         <div class="flex-grow-1 min-width-0">
-                            <div class="fs-13 fw-600 text-truncate">{{ Str::limit($dl->document->nama_file ?? '-', 30) }}</div>
+                            <div class="fs-13 fw-600 text-truncate">{{ Str::limit($dl->document->judul ?? '-', 30) }}</div>
                             <div class="fs-12 text-secondary">{{ $dl->user->name ?? '-' }} &bull; {{ $dl->downloaded_at->diffForHumans() }}</div>
                         </div>
                     </div>
